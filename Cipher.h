@@ -338,4 +338,31 @@ void displayList(Node * begin){
     }
 }
 
+char * readFile(char * fileName){
+
+	FILE * file = fopen(fileName, "r");
+	char message[50];
+	char * msg;
+	int length = 0, i = 0;
+
+	if(file == 	NULL){
+		printf("\nThere was a problem reading your file\n");
+		exit(1);
+	}
+	else{
+		fgets(message, 50, file);
+		fflush(stdin);
+		fclose(file);
+		length = strlen(message);
+		msg = calloc(length,sizeof(char));
+
+		printf("\nFile length: %i\n", length);
+		for(i = 0; i < length; i++){
+			msg[i] = message[i];
+		}
+	}	
+	
+	return msg;
+}
+
 #endif

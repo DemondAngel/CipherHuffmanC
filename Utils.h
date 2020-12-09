@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+
 char * formatText(char * word){
 
     int lenWord = strlen(word), i = 0;
