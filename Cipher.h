@@ -1,51 +1,54 @@
 //Parte del codigo es reciclado del curso de Estructura de Datos de UPIITA
 //Part of this code was recycled of UPIITA's Estructura de Datos course.
-#ifndef _Cipher_h
-#define _Cipher_h
-#include <stdio.h>
+#ifndef _Cipher_
+#define _Cipher_
 #include <stdlib.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
 typedef struct _Nodo{
-	int dato;
-	struct _Nodo *izquierda;
-	struct _Nodo *derecha;
+	char c;
+	int f;
+	struct _Nodo *left;
+	struct _Nodo *right;
+	struct _Nodo * next;
 }Nodo;
 
-Nodo * crear (int d){
-	Nodo * nuevo;
-	nuevo = (Nodo *)malloc(sizeof(Nodo));
-	nuevo->dato = d;
-	nuevo->izquierda=NULL;
-	nuevo->derecha=NULL;
-	return nuevo;
+Nodo * create (char c, int f){
+	Nodo * newNode;
+	newNode = (Nodo *) malloc(sizeof(Nodo));
+	newNode->c = c;
+	newNode->f = f;
+	newNode->left=NULL;
+	newNode->right=NULL;
+	newNode->next = NULL;
+	return newNode;
 	
 }
 
-Nodo *insertar(Nodo * arbol, int d){
-	Nodo * raiz;
-	Nodo * nuevo;
+Nodo * insert(Nodo * tree, char c, int f){
+	Nodo * origin;
+	Nodo * newNode;
 	
-	nuevo = crear(d);
+	newNode = create(c, f);
 	
-	if(arbol==NULL){
-		return nuevo;
+	if(tree==NULL){
+		return newNode;
 	}else{
-		raiz=arbol;
-		while(raiz!=NULL){
-			if(nuevo->dato > raiz->dato){
-				if(raiz->derecha==NULL){
-				raiz->derecha=nuevo;
-				return arbol;	
+		origin=tree;
+		while(origin!=NULL){
+			if(newNode->f > origin->f){
+				if(origin->right==NULL){
+				origin->right=newNode;
+				return tree;	
 				}else{
-					raiz=raiz->derecha;	
+					origin=origin->right;	
 				}
 			}else{
-				if(raiz->izquierda==NULL){
-					raiz->izquierda=nuevo;
-					return arbol;
+				if(origin->left==NULL){
+					origin->left=newNode;
+					return tree;
 				}else{
-					raiz=raiz->izquierda;
+					origin=origin->left;
 				}
 				
 			}
@@ -55,67 +58,68 @@ Nodo *insertar(Nodo * arbol, int d){
 }
 
 
-void preorder(Nodo * raiz){
-	if(raiz!=NULL){
-		printf("%d\n",raiz->dato);
-		preorder(raiz->izquierda);
-		preorder(raiz->derecha);
+void preorder(Nodo * origin){
+	if(origin!=NULL){
+		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
+		preorder(origin->left);
+		preorder(origin->right);
 	}
 }
 
-void inorder(Nodo * raiz){
-	if(raiz!=NULL){
-		inorder(raiz->izquierda);
-		printf("%d\n",raiz->dato);
-		inorder(raiz->derecha);
+void inorder(Nodo * origin){
+	if(origin!=NULL){
+		inorder(origin->left);
+		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
+		inorder(origin->right);
 	}
 }
 
-void posorder(Nodo * raiz){
-	if(raiz!=NULL){
-		posorder(raiz->izquierda);
-		posorder(raiz->derecha);
-		printf("%d\n",raiz->dato);
+void posorder(Nodo * origin){
+	if(origin!=NULL){
+		posorder(origin->left);
+		posorder(origin->right);
+		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
 	}
 }
 
-void moverIzquierda(Nodo ** arbol){
+void moveLeft(Nodo ** tree){
 	Nodo * aux1;
 	Nodo * aux2;
 	
-	aux2 = (*arbol);
-	aux1 = (*arbol)->izquierda;
+	aux2 = (*tree);
+	aux1 = (*tree)->left;
 	
-	while(aux1->derecha!=NULL){
+	while(aux1->right!=NULL){
 		aux2 = aux1;
-		aux1 = aux1->derecha;
+		aux1 = aux1->right;
 	}
-	(*arbol)->dato = aux1->dato;
-	if(aux2 == (*arbol))
-		aux2->izquierda = aux1->izquierda;
+	(*tree)->f = aux1->f;
+	(*tree)->c = aux1->c;
+	if(aux2 == (*tree))
+		aux2->left = aux1->left;
 	else
-		aux2->derecha = aux1->izquierda;
+		aux2->right = aux1->left;
 	
-	(*arbol)=aux1;
+	(*tree)=aux1;
 }
 
-void borrar(Nodo ** arbol, int buscar){
+void delete(Nodo ** tree, int search){
 	Nodo * aux;
-	if(*(arbol)==NULL){
+	if(*(tree)==NULL){
 		printf("\nNO EXISTE EL NODO A BORRAR");
 	}else{
-		if(buscar < (*arbol)->dato)
-		borrar(&(*arbol)->izquierda,buscar);
-		else if(buscar > (*arbol)->dato)
-		borrar(&(*arbol)->derecha,buscar);
-		if(buscar == (*arbol)->dato){
-			aux = (*arbol);
-			if(aux->izquierda==NULL)
-			(*arbol)=aux->derecha;
-			else if(aux->derecha==NULL)
-			(*arbol) = aux->izquierda;
+		if(search < (*tree)->f)
+		delete(&(*tree)->left,search);
+		else if(search > (*tree)->f)
+		delete(&(*tree)->right,search);
+		if(search == (*tree)->f){
+			aux = (*tree);
+			if(aux->left==NULL)
+			(*tree)=aux->right;
+			else if(aux->right==NULL)
+			(*tree) = aux->left;
 			else
-			moverIzquierda(&aux);
+			moveLeft(&aux);
 			free(aux);
 			
 		}
@@ -123,16 +127,16 @@ void borrar(Nodo ** arbol, int buscar){
 	
 }
 
-int altura(Nodo *arbol){
-	if(arbol==NULL)
+int height(Nodo *tree){
+	if(tree==NULL)
 	return 0;
 	else 
-	return MAXIMO(altura(arbol->izquierda)+1,altura(arbol->derecha)+1);
+	return MAXIMO(height(tree->left)+1,height(tree->right)+1);
 	
 }
 
-#endif _Cipher_h
+void readFile(){
 
+}
 
-
-
+#endif
