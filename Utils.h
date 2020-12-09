@@ -47,7 +47,7 @@ char * formatText(char * word){
     return word;
 }
 
-char * pop(char * string, int position){
+char * popPosition(char * string, int position){
     
      char * newString;
 

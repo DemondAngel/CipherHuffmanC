@@ -5,17 +5,17 @@
 #include <stdlib.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
-typedef struct _Nodo{
+typedef struct _Node{
 	char c;
 	int f;
-	struct _Nodo *left;
-	struct _Nodo *right;
-	struct _Nodo * next;
-}Nodo;
+	struct _Node *left;
+	struct _Node *right;
+	struct _Node * next;
+}Node;
 
-Nodo * create (char c, int f){
-	Nodo * newNode;
-	newNode = (Nodo *) malloc(sizeof(Nodo));
+Node * create (char c, int f){
+	Node * newNode;
+	newNode = (Node *) malloc(sizeof(Node));
 	newNode->c = c;
 	newNode->f = f;
 	newNode->left=NULL;
@@ -25,9 +25,9 @@ Nodo * create (char c, int f){
 	
 }
 
-Nodo * insert(Nodo * tree, char c, int f){
-	Nodo * origin;
-	Nodo * newNode;
+Node * insertLeaf(Node * tree, char c, int f){
+	Node * origin;
+	Node * newNode;
 	
 	newNode = create(c, f);
 	
@@ -58,7 +58,7 @@ Nodo * insert(Nodo * tree, char c, int f){
 }
 
 
-void preorder(Nodo * origin){
+void preorder(Node * origin){
 	if(origin!=NULL){
 		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
 		preorder(origin->left);
@@ -66,7 +66,7 @@ void preorder(Nodo * origin){
 	}
 }
 
-void inorder(Nodo * origin){
+void inorder(Node * origin){
 	if(origin!=NULL){
 		inorder(origin->left);
 		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
@@ -74,7 +74,7 @@ void inorder(Nodo * origin){
 	}
 }
 
-void posorder(Nodo * origin){
+void posorder(Node * origin){
 	if(origin!=NULL){
 		posorder(origin->left);
 		posorder(origin->right);
@@ -82,9 +82,9 @@ void posorder(Nodo * origin){
 	}
 }
 
-void moveLeft(Nodo ** tree){
-	Nodo * aux1;
-	Nodo * aux2;
+void moveLeft(Node ** tree){
+	Node * aux1;
+	Node * aux2;
 	
 	aux2 = (*tree);
 	aux1 = (*tree)->left;
@@ -103,15 +103,15 @@ void moveLeft(Nodo ** tree){
 	(*tree)=aux1;
 }
 
-void delete(Nodo ** tree, int search){
-	Nodo * aux;
+void deleteLeaf(Node ** tree, int search){
+	Node * aux;
 	if(*(tree)==NULL){
-		printf("\nNO EXISTE EL NODO A BORRAR");
+		printf("\nNO EXISTE EL Node A BORRAR");
 	}else{
 		if(search < (*tree)->f)
-		delete(&(*tree)->left,search);
+		deleteLeaf(&(*tree)->left,search);
 		else if(search > (*tree)->f)
-		delete(&(*tree)->right,search);
+		deleteLeaf(&(*tree)->right,search);
 		if(search == (*tree)->f){
 			aux = (*tree);
 			if(aux->left==NULL)
@@ -127,16 +127,215 @@ void delete(Nodo ** tree, int search){
 	
 }
 
-int height(Nodo *tree){
+int height(Node *tree){
 	if(tree==NULL)
 	return 0;
 	else 
 	return MAXIMO(height(tree->left)+1,height(tree->right)+1);
-	
 }
 
-void readFile(){
+int size(Node * begin){
 
+    int i = 0;
+
+    if(begin == NULL){
+        printf("\n La FILA esta vacia\n");
+    }
+    else{
+        while(begin != NULL){
+            i++;
+            begin = begin->next;
+        }
+
+    }
+
+    return i;
+
+}
+
+Node * push(Node * begin, char c, int f){
+    Node * newNode;
+    newNode = create(c, f);
+
+    if(begin == NULL){
+        begin = newNode;
+    }
+    else{
+        Node * aux = begin;
+
+        while(aux->next != NULL){
+
+            aux = aux->next;
+        }
+
+        aux->next = newNode;
+    }
+
+    return begin;
+}
+
+Node * pushInit(Node * top, char c, int f){
+    Node * newNode;
+    newNode = create(c, f);
+    
+    if(top != NULL){
+        newNode->next=top;
+    }
+        
+    return newNode;
+}
+
+Node * pushIn(Node * begin, char c,int f, int pos){
+    Node * newNode;
+    Node* aux;
+    int i = 0;
+    int len = size(begin);
+
+    newNode= create(c, f);
+
+    if(pos >= 0 && pos < len){
+        if(pos == 0){
+
+            begin = pushInit(begin,c, f);
+        }
+        else{
+            aux = begin;
+            for( i = 0;i < pos-1; i++){
+                aux = aux->next;
+            }
+
+            newNode ->next=aux->next;
+            aux->next = newNode;
+
+        }
+    }
+    else{
+        printf("Invalid position");
+    }
+
+    return begin;
+}
+
+Node * deleteBegin(Node * begin){
+    Node * aux;
+    aux = begin;
+
+    if(begin !=  NULL){
+        begin=begin->next;
+        free(aux);
+    }
+
+    return begin;
+}
+
+//Borrar en poscicion
+
+Node * popListElement(Node * begin, int pos){
+
+    Node * aux;
+    Node * aux2;
+    Node * toFree;
+    int i = 0;
+    int len = 0;
+    len = size(begin);
+
+    if(pos >= 0 && pos < len){
+
+        if(pos == 1){
+            begin = deleteBegin(begin);
+        }
+        else{
+            aux = begin;
+
+            for(i = 0; i<pos-1; i++){
+                aux = aux->next;
+            }
+            
+            aux2 = aux->next->next;
+            toFree = aux->next;
+            aux->next = aux2;
+            free(toFree);
+        }
+
+    }
+    else{
+        printf("Invalid position");
+    }
+
+    return begin;    
+}
+
+Node * popList(Node * begin){
+
+    Node * aux;
+    Node * aux2;
+
+    if(begin == NULL){
+        printf("\nThe list is empty\n");
+    }
+    else{
+        aux = begin;
+
+        while(aux->next->next != NULL){
+            aux = aux->next;
+        }
+        aux2 = aux->next;
+        free(aux2);
+        aux->next = NULL;
+        
+    }
+
+    return begin;
+}
+
+/*
+Node * changeIndexOfList(Node * begin, char c,int dato, int datoCambio){
+
+    Node * aux;
+    int existe = 0;
+
+    if(begin == NULL){
+        printf("\nLa lista esta vacia\n");
+    }
+    else{
+
+        aux = begin;
+
+        while(aux != NULL && existe == 0){
+
+            if(aux->dato == dato){
+                existe = 1;
+                aux->dato = datoCambio;
+            }
+            else{
+                aux = aux->next;
+            }
+
+        }
+
+        if(existe == 0){
+            printf("\nNo existe el dato a cambiar\n");
+        }
+
+    }
+
+    return begin;
+
+}
+*/
+
+void displayList(Node * begin){
+
+    if(begin == NULL){
+        printf("\n The list is empty\n");
+    }
+    else{
+        while(begin != NULL){
+            printf("\n Character %c\tFrequency: %i\n", begin->c, begin->f);
+
+            begin= begin->next;
+        }
+    }
 }
 
 #endif
