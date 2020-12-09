@@ -2,6 +2,7 @@
 //Part of this code was recycled of UPIITA's Estructura de Datos course.
 #ifndef _Cipher_
 #define _Cipher_
+#include <wchar.h>
 #include <stdlib.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
@@ -338,11 +339,11 @@ void displayList(Node * begin){
     }
 }
 
-char * readFile(char * fileName){
+wchar_t * readFile(char * fileName){
 
-	FILE * file = fopen(fileName, "r");
-	char message[50];
-	char * msg;
+	FILE * file = fopen(fileName, "r, ccs=UTF-8");
+	wchar_t message[50];
+	wchar_t * msg;
 	int length = 0, i = 0;
 
 	if(file == 	NULL){
@@ -350,13 +351,12 @@ char * readFile(char * fileName){
 		exit(1);
 	}
 	else{
-		fgets(message, 50, file);
+		fgetws(message, 50, file);
 		fflush(stdin);
 		fclose(file);
-		length = strlen(message);
-		msg = calloc(length,sizeof(char));
+		length = wcslen(message);
+		msg = calloc(length,sizeof(wchar_t));
 
-		printf("\nFile length: %i\n", length);
 		for(i = 0; i < length; i++){
 			msg[i] = message[i];
 		}

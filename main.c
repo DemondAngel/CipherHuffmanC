@@ -1,17 +1,12 @@
 #include <locale.h>
-#include <windows.h>
 #include "Utils.h"
 #include "Cipher.h"
 
 int main(){
-
-    setlocale(LC_ALL, "spanish"); 
-    SetConsoleCP(1252);
-    SetConsoleOutputCP(1252);
-
-    /*
+    setlocale(LC_CTYPE, "");
     char fileName[100];
-    char * message;
+    wchar_t * message;
+
     printf("Porfavor escriba el nombre de su archivo: \n");
     printf("Please write your file name: \n");
 
@@ -19,17 +14,11 @@ int main(){
 
     message = readFile(fileName);
 
-    printf("\nYour message is:\n");
-    puts(message);
-    */
-    char cadena[100];
-    char * nuevaCadena;
-    printf("\nPorfavor inserta una cadena con acentos\n");
-    gets(cadena);
+    message = formatText(message);
 
-    nuevaCadena = formatText(cadena);
+    char * msg = wcstringToString(message);
 
-    printf("\nLa nueva cadena es: %s\n", nuevaCadena);
-
+    printf("\nLa palabra sin wide es: %s\n", msg);
+    
     return 0;
 }

@@ -5,12 +5,23 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+char * wcstringToString(wchar_t * wcs){
 
-char * formatText(char * word){
+    int len = wcslen(wcs), i = 0;
+    char * newString = calloc(len, sizeof(char));
 
-    int lenWord = strlen(word), i = 0;
-    char vocasl[11] = "AEIOUaeiou";
+    sprintf(newString, "%ws", wcs);
 
+    free(wcs);
+    return newString;
+}
+
+wchar_t * formatText(wchar_t * word){
+
+    int lenWord = wcslen(word), i = 0;
+    char vocals[11] = "AEIOUaeiou";
+
+    
     for(i = 0; i < lenWord; i++){
 
         if(word[i] == ' '){
@@ -21,7 +32,7 @@ char * formatText(char * word){
             if(isascii(word[i]) == 0){
                 int charCode = toascii(word[i]);
                 
-                if(strchr(word, charCode) == NULL){
+                if(wcschr(word, charCode) == NULL){
                     
                     if(charCode == 100 || charCode == 68){
                         charCode = 97;
@@ -45,6 +56,7 @@ char * formatText(char * word){
         }
 
     }
+    
     return word;
 }
 
