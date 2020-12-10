@@ -9,10 +9,9 @@ char * wcstringToString(wchar_t * wcs){
 
     int len = wcslen(wcs), i = 0;
     char * newString = calloc(len, sizeof(char));
-
+    wprintf(L"%ls", wcs);
     sprintf(newString, "%ws", wcs);
 
-    free(wcs);
     return newString;
 }
 
@@ -34,19 +33,19 @@ wchar_t * formatText(wchar_t * word){
                 
                 if(wcschr(word, charCode) == NULL){
                     
-                    if(charCode == 100 || charCode == 68){
+                    if(word[i] == L'á' ||word[i] == L'ä' || word[i] == L'Á' ||word[i] == L'Ä'){
                         charCode = 97;
                     }
-                    else if(charCode == 107 || charCode == 75){
+                    else if(word[i] == L'é' ||word[i] == L'ë' || word[i] == L'É' || word[i] == L'Ë'){
                         charCode = 101;
                     }
-                    else if(charCode == 111 || charCode == 79){
+                    else if(word[i] == L'í' || word[i] == L'ï' || word[i] == L'Í' || word[i] == L'Ï'){
                         charCode = 105;
                     }
-                    else if(charCode == 118 || charCode == 86){
+                    else if(word[i] == L'ó' ||word[i] == L'ö' || word[i] == L'Ö' || word[i] == L'Ó'){
                         charCode = 111;
                     }
-                    else if(charCode == 124|| charCode == 92){
+                    else if(word[i] == L'ú' ||word[i] == L'ü' || word[i] == L'Ú' || word[i] == L'Ü'){
                         charCode = 117;
                     }
                 }
