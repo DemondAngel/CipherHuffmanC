@@ -18,7 +18,6 @@ char * wcstringToString(wchar_t * wcs){
 wchar_t * formatText(wchar_t * word){
 
     int lenWord = wcslen(word), i = 0;
-    char vocals[11] = "AEIOUaeiou";
 
     
     for(i = 0; i < lenWord; i++){
@@ -30,25 +29,24 @@ wchar_t * formatText(wchar_t * word){
             
             if(isascii(word[i]) == 0){
                 int charCode = toascii(word[i]);
-                
-                if(wcschr(word, charCode) == NULL){
                     
-                    if(word[i] == L'á' ||word[i] == L'ä' || word[i] == L'Á' ||word[i] == L'Ä'){
-                        charCode = 97;
-                    }
-                    else if(word[i] == L'é' ||word[i] == L'ë' || word[i] == L'É' || word[i] == L'Ë'){
-                        charCode = 101;
-                    }
-                    else if(word[i] == L'í' || word[i] == L'ï' || word[i] == L'Í' || word[i] == L'Ï'){
-                        charCode = 105;
-                    }
-                    else if(word[i] == L'ó' ||word[i] == L'ö' || word[i] == L'Ö' || word[i] == L'Ó'){
-                        charCode = 111;
-                    }
-                    else if(word[i] == L'ú' ||word[i] == L'ü' || word[i] == L'Ú' || word[i] == L'Ü'){
-                        charCode = 117;
-                    }
+                if(word[i] == L'á' ||word[i] == L'ä' || word[i] == L'Á' ||word[i] == L'Ä'){
+                    charCode = 97;
                 }
+                else if(word[i] == L'é' ||word[i] == L'ë' || word[i] == L'É' || word[i] == L'Ë'){
+                    charCode = 101;
+                }
+                else if(word[i] == L'ï' || word[i] == L'í'  || word[i] == L'Í' || word[i] == L'Ï'){
+
+                    charCode = 105;
+                }
+                else if(word[i] == L'ó' ||word[i] == L'ö' || word[i] == L'Ö' || word[i] == L'Ó'){
+                    charCode = 111;
+                }
+                else if(word[i] == L'ú' ||word[i] == L'ü' || word[i] == L'Ú' || word[i] == L'Ü'){
+                    charCode = 117;
+                }
+                
                 word[i] = charCode;
             }
             word[i] = tolower(word[i]);
