@@ -5,20 +5,18 @@
 int main(){
     setlocale(LC_CTYPE, "");
     char fileName[100];
-    wchar_t * message;
-
+    Nodo * arbolList = NULL;
+    
     printf("Porfavor escriba el nombre de su archivo: \n");
     printf("Please write your file name: \n");
 
     gets(fileName);
 
-    message = readFile(fileName);
+    arbolList = readFile(fileName, arbolList);
 
-    message = formatText(message);
-
-    char * msg = wcstringToString(message);
-
-    printf("\nLa palabra sin wide es: %s\n", msg);
+    displayList(arbolList);
     
+    free(arbolList);
+
     return 0;
 }

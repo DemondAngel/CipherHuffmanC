@@ -5,81 +5,39 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-char * wcstringToString(wchar_t * wcs){
+char formatChar(wchar_t wc){
+    char newChar;
 
-    int len = wcslen(wcs), i = 0;
-    char * newString = calloc(len, sizeof(char));
-    wprintf(L"%ls", wcs);
-    sprintf(newString, "%ws", wcs);
-
-    return newString;
-}
-
-wchar_t * formatText(wchar_t * word){
-
-    int lenWord = wcslen(word), i = 0;
-
-    
-    for(i = 0; i < lenWord; i++){
-
-        if(word[i] == ' '){
-            word[i] = '_';
-        }
-        else{
+    if(wc == ' '){
+        newChar = '_';
+    }
+    else{
+        int charCode = toascii(wc);
+        if(isascii(wc) == 0){
             
-            if(isascii(word[i]) == 0){
-                int charCode = toascii(word[i]);
-                    
-                if(word[i] == L'á' ||word[i] == L'ä' || word[i] == L'Á' ||word[i] == L'Ä'){
-                    charCode = 97;
-                }
-                else if(word[i] == L'é' ||word[i] == L'ë' || word[i] == L'É' || word[i] == L'Ë'){
-                    charCode = 101;
-                }
-                else if(word[i] == L'ï' || word[i] == L'í'  || word[i] == L'Í' || word[i] == L'Ï'){
-
-                    charCode = 105;
-                }
-                else if(word[i] == L'ó' ||word[i] == L'ö' || word[i] == L'Ö' || word[i] == L'Ó'){
-                    charCode = 111;
-                }
-                else if(word[i] == L'ú' ||word[i] == L'ü' || word[i] == L'Ú' || word[i] == L'Ü'){
-                    charCode = 117;
-                }
-                
-                word[i] = charCode;
+            if(wc == L'á' ||wc == L'ä' || wc == L'Á' ||wc == L'Ä'){
+                charCode = 97;
             }
-            word[i] = tolower(word[i]);
+            else if(wc == L'é' ||wc == L'ë' || wc == L'É' || wc == L'Ë'){
+                charCode = 101;
+            }
+            else if(wc == L'ï' || wc == L'í'  || wc == L'Í' || wc == L'Ï'){
+
+                charCode = 105;
+            }
+            else if(wc == L'ó' ||wc == L'ö' || wc == L'Ö' || wc == L'Ó'){
+                charCode = 111;
+            }
+            else if(wc == L'ú' ||wc == L'ü' || wc == L'Ú' || wc == L'Ü'){
+                charCode = 117;
+            }
+            
         }
 
+        newChar = tolower(charCode);
     }
     
-    return word;
-}
-
-char * popPosition(char * string, int position){
-    
-     char * newString;
-
-     int len = strlen(string), i = 0;
-     
-     string[position] = '\0';
-
-     for(i = position; i < len-1; i++){
-         string[i] = string[i+1];
-     }
-     string[len-1] = '\0';
-    
-     len = strlen(string);
-
-     newString = calloc(len, sizeof(char));
-
-    for(i = 0;  i< len; i++){
-        newString[i] = string[i];
-    }
-
-    return newString;
-
+    return newChar;
 }
 
 #endif

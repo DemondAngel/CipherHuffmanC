@@ -6,31 +6,39 @@
 #include <stdlib.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
-typedef struct _Node{
+typedef struct _Nodo{
 	char c;
 	int f;
-	struct _Node *left;
-	struct _Node *right;
-	struct _Node * next;
-}Node;
+	struct _Nodo *left;
+	struct _Nodo *right;
+	struct _Nodo * next;
+} Nodo;
 
-Node * create (char c, int f){
-	Node * newNode;
-	newNode = (Node *) malloc(sizeof(Node));
+Nodo * createNodo (char c, int f){
+    
+	Nodo * newNode;
+    
+	newNode = (Nodo *) malloc(sizeof(Nodo));
+    
+    if(newNode == NULL){
+        printf("Murio");
+    }
+
 	newNode->c = c;
 	newNode->f = f;
 	newNode->left=NULL;
 	newNode->right=NULL;
 	newNode->next = NULL;
+    
 	return newNode;
 	
 }
 
-Node * insertLeaf(Node * tree, char c, int f){
-	Node * origin;
-	Node * newNode;
+Nodo * insertLeaf(Nodo * tree, char c, int f){
+	Nodo * origin;
+	Nodo * newNode;
 	
-	newNode = create(c, f);
+	newNode = createNodo(c, f);
 	
 	if(tree==NULL){
 		return newNode;
@@ -59,7 +67,7 @@ Node * insertLeaf(Node * tree, char c, int f){
 }
 
 
-void preorder(Node * origin){
+void preorder(Nodo * origin){
 	if(origin!=NULL){
 		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
 		preorder(origin->left);
@@ -67,7 +75,7 @@ void preorder(Node * origin){
 	}
 }
 
-void inorder(Node * origin){
+void inorder(Nodo * origin){
 	if(origin!=NULL){
 		inorder(origin->left);
 		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
@@ -75,7 +83,7 @@ void inorder(Node * origin){
 	}
 }
 
-void posorder(Node * origin){
+void posorder(Nodo * origin){
 	if(origin!=NULL){
 		posorder(origin->left);
 		posorder(origin->right);
@@ -83,9 +91,9 @@ void posorder(Node * origin){
 	}
 }
 
-void moveLeft(Node ** tree){
-	Node * aux1;
-	Node * aux2;
+void moveLeft(Nodo ** tree){
+	Nodo * aux1;
+	Nodo * aux2;
 	
 	aux2 = (*tree);
 	aux1 = (*tree)->left;
@@ -104,8 +112,8 @@ void moveLeft(Node ** tree){
 	(*tree)=aux1;
 }
 
-void deleteLeaf(Node ** tree, int search){
-	Node * aux;
+void deleteLeaf(Nodo ** tree, int search){
+	Nodo * aux;
 	if(*(tree)==NULL){
 		printf("\nNO EXISTE EL Node A BORRAR");
 	}else{
@@ -128,14 +136,14 @@ void deleteLeaf(Node ** tree, int search){
 	
 }
 
-int height(Node *tree){
+int height(Nodo *tree){
 	if(tree==NULL)
 	return 0;
 	else 
 	return MAXIMO(height(tree->left)+1,height(tree->right)+1);
 }
 
-int size(Node * begin){
+int size(Nodo * begin){
 
     int i = 0;
 
@@ -154,15 +162,16 @@ int size(Node * begin){
 
 }
 
-Node * push(Node * begin, char c, int f){
-    Node * newNode;
-    newNode = create(c, f);
+Nodo * push(Nodo * begin, char c, int f){
+    Nodo * newNode;
+    
+    newNode = createNodo(c, f);
 
     if(begin == NULL){
         begin = newNode;
     }
     else{
-        Node * aux = begin;
+        Nodo * aux = begin;
 
         while(aux->next != NULL){
 
@@ -175,9 +184,9 @@ Node * push(Node * begin, char c, int f){
     return begin;
 }
 
-Node * pushInit(Node * top, char c, int f){
-    Node * newNode;
-    newNode = create(c, f);
+Nodo * pushInit(Nodo * top, char c, int f){
+    Nodo * newNode;
+    newNode = createNodo(c, f);
     
     if(top != NULL){
         newNode->next=top;
@@ -186,13 +195,13 @@ Node * pushInit(Node * top, char c, int f){
     return newNode;
 }
 
-Node * pushIn(Node * begin, char c,int f, int pos){
-    Node * newNode;
-    Node* aux;
+Nodo * pushIn(Nodo * begin, char c,int f, int pos){
+    Nodo * newNode;
+    Nodo* aux;
     int i = 0;
     int len = size(begin);
 
-    newNode= create(c, f);
+    newNode= createNodo(c, f);
 
     if(pos >= 0 && pos < len){
         if(pos == 0){
@@ -217,8 +226,8 @@ Node * pushIn(Node * begin, char c,int f, int pos){
     return begin;
 }
 
-Node * deleteBegin(Node * begin){
-    Node * aux;
+Nodo * deleteBegin(Nodo * begin){
+    Nodo * aux;
     aux = begin;
 
     if(begin !=  NULL){
@@ -231,11 +240,11 @@ Node * deleteBegin(Node * begin){
 
 //Borrar en poscicion
 
-Node * popListElement(Node * begin, int pos){
+Nodo * popListElement(Nodo * begin, int pos){
 
-    Node * aux;
-    Node * aux2;
-    Node * toFree;
+    Nodo * aux;
+    Nodo * aux2;
+    Nodo * toFree;
     int i = 0;
     int len = 0;
     len = size(begin);
@@ -266,10 +275,10 @@ Node * popListElement(Node * begin, int pos){
     return begin;    
 }
 
-Node * popList(Node * begin){
+Nodo * popList(Nodo * begin){
 
-    Node * aux;
-    Node * aux2;
+    Nodo * aux;
+    Nodo * aux2;
 
     if(begin == NULL){
         printf("\nThe list is empty\n");
@@ -289,10 +298,9 @@ Node * popList(Node * begin){
     return begin;
 }
 
-/*
-Node * changeIndexOfList(Node * begin, char c,int dato, int datoCambio){
+Nodo * changeIndexOfList(Nodo * begin, char c, int frequency){
 
-    Node * aux;
+    Nodo * aux;
     int existe = 0;
 
     if(begin == NULL){
@@ -304,9 +312,9 @@ Node * changeIndexOfList(Node * begin, char c,int dato, int datoCambio){
 
         while(aux != NULL && existe == 0){
 
-            if(aux->dato == dato){
+            if(aux->c == c){
                 existe = 1;
-                aux->dato = datoCambio;
+                aux->f = frequency;
             }
             else{
                 aux = aux->next;
@@ -323,9 +331,42 @@ Node * changeIndexOfList(Node * begin, char c,int dato, int datoCambio){
     return begin;
 
 }
-*/
 
-void displayList(Node * begin){
+Nodo * indexOfChar(Nodo * begin, char c){
+
+    Nodo * aux = NULL;
+    int existe = 0;
+
+    if(begin == NULL){
+        printf("\nLa lista esta vacia\n");
+    }
+    else{
+
+        aux = begin;
+
+        while(aux != NULL && existe == 0){
+
+            if(aux->c == c){
+                existe = 1;
+                break;
+            }
+            else{
+                aux = aux->next;
+            }
+
+        }
+
+        if(existe == 0){
+            printf("\nNo existe el dato a cambiar\n");
+        }
+
+    }
+
+    return aux;
+
+}
+
+void displayList(Nodo * begin){
 
     if(begin == NULL){
         printf("\n The list is empty\n");
@@ -339,11 +380,29 @@ void displayList(Node * begin){
     }
 }
 
-wchar_t * readFile(char * fileName){
+Nodo * insertFrequency(Nodo * list, char c){
+
+    int i = 0, j = 0;
+
+    Nodo * aux;
+    
+        
+    aux = indexOfChar(list, c);
+    
+    if(aux == NULL){
+        list = push(list, c, 1);
+    }
+    else{
+        list = changeIndexOfList(list, c, aux->f+1);
+    }
+    
+    return list;
+}
+
+Nodo * readFile(char * fileName, Nodo * list){
 
 	FILE * file = fopen(fileName, "r, ccs=UTF-8");
-	wchar_t message[50];
-	wchar_t * msg;
+	wchar_t wc;
 	int length = 0, i = 0;
 
 	if(file == 	NULL){
@@ -351,18 +410,21 @@ wchar_t * readFile(char * fileName){
 		exit(1);
 	}
 	else{
-		fgetws(message, 50, file);
-		fflush(stdin);
-		fclose(file);
-		length = wcslen(message);
-		msg = calloc(length,sizeof(wchar_t));
+        
+        while((wc = fgetwc(file)) != WEOF){
 
-		for(i = 0; i < length; i++){
-			msg[i] = message[i];
-		}
+            wprintf(L"%c", wc);
+
+            char c = formatChar(wc);
+
+            list = insertFrequency(list, c);
+
+        }
+
 	}	
-	
-	return msg;
+	fclose(file);
+    
+	return list;
 }
 
 #endif
