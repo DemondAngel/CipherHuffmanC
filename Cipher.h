@@ -66,10 +66,9 @@ Nodo * insertLeaf(Nodo * tree, char c, int f){
 	
 }
 
-
 void preorder(Nodo * origin){
 	if(origin!=NULL){
-		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
+		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
 		preorder(origin->left);
 		preorder(origin->right);
 	}
@@ -78,7 +77,7 @@ void preorder(Nodo * origin){
 void inorder(Nodo * origin){
 	if(origin!=NULL){
 		inorder(origin->left);
-		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
+		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
 		inorder(origin->right);
 	}
 }
@@ -87,7 +86,7 @@ void posorder(Nodo * origin){
 	if(origin!=NULL){
 		posorder(origin->left);
 		posorder(origin->right);
-		printf("Character %d, Frequency: %i\n",origin->c, origin->f);
+		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
 	}
 }
 
@@ -298,7 +297,7 @@ Nodo * popList(Nodo * begin){
     return begin;
 }
 
-Nodo * changeIndexOfList(Nodo * begin, char c, int frequency){
+Nodo * changeIndexOfListFrequency(Nodo * begin, char c, int frequency){
 
     Nodo * aux;
     int existe = 0;
@@ -329,7 +328,23 @@ Nodo * changeIndexOfList(Nodo * begin, char c, int frequency){
     }
 
     return begin;
+}
 
+void changeIndexOfList(Nodo *begin, char c, int f, int posicion) {
+    Nodo *aux = begin;
+    int i = 0;
+    int longitudLista = size(begin);
+
+    if(posicion >= 0 && posicion < longitudLista){
+            for(i = 0; i<posicion-1;i++){ //Verify
+                aux = aux ->next;
+            }
+
+            aux ->c = c;
+            aux -> f =f;
+    }else{
+        printf("Posicion no valida");
+    }
 }
 
 Nodo * indexOfChar(Nodo * begin, char c){
@@ -366,6 +381,39 @@ Nodo * indexOfChar(Nodo * begin, char c){
 
 }
 
+Nodo * elementList(Nodo * begin, int position){
+
+    Nodo *aux = begin;
+    int i = 0;
+    int longitudLista = size(begin);
+
+    if(position >= 0 && position < longitudLista){
+            for(i = 0; i<position;i++){
+                aux = aux ->next;
+            }
+    }else{
+        aux = NULL;
+        printf("Posicion no valida");
+    }
+
+    return aux;
+
+}
+
+Nodo * lastIndexOfFreq(Nodo * begin, int freq){
+    //The list must be ordered
+    Nodo * aux = begin;
+
+    while(aux->next != NULL &&( aux->f <= freq && aux->next->f <=freq)){
+
+        aux = aux->next;
+        
+    }
+
+    return aux;
+
+}
+
 void displayList(Nodo * begin){
 
     if(begin == NULL){
@@ -393,7 +441,7 @@ Nodo * insertFrequency(Nodo * list, char c){
         list = push(list, c, 1);
     }
     else{
-        list = changeIndexOfList(list, c, aux->f+1);
+        list = changeIndexOfListFrequency(list, c, aux->f+1);
     }
     
     return list;
@@ -427,4 +475,151 @@ Nodo * readFile(char * fileName, Nodo * list){
 	return list;
 }
 
+Nodo * sublist(Nodo * list, int begin, int end){
+
+    Nodo * sublist = NULL;
+    Nodo * aux = list;
+    int tamanio = size(list);
+    int i = 1;
+    for(i = 1; i <= tamanio; i++){
+
+        if(begin <= i && i <= end){
+            sublist = push(sublist, aux->c, aux->f);
+        }
+        
+        aux = aux->next;
+    }
+
+    return sublist;
+
+}
+
+Nodo * sortList(Nodo * list){
+    Nodo * aux = list;
+    int i = 0;
+    
+    if(size(list) != 1){
+        
+        if(aux->f >= aux->next->f){
+            char c = aux->c;
+            char f = aux->f;
+
+            changeIndexOfList(list, aux->next->c, aux->next->f, 0);
+            changeIndexOfList(list, c, f, 1);
+
+        }
+         
+
+    }
+    
+    return list;
+}
+
+Nodo * interSort(Nodo * list1, Nodo * list2){
+
+    Nodo * newList = NULL;
+
+    while(list1 != NULL || list2 != NULL){
+        
+        if(list1 != NULL && list2 != NULL){
+            if(list2->f >= list1->f){
+                newList = push(newList, list1->c, list1->f);
+                list1 = list1->next;
+            }
+            else{
+                newList = push(newList, list2->c, list2->f);
+                list2 = list2->next;
+            }
+        }
+        else{
+            if(list1 == NULL){
+                newList = push(newList, list2->c, list2->f);
+                list2 = list2->next;
+            }
+            else{
+                if(list2 == NULL){
+                    newList = push(newList,list1->c, list1->f);
+                    list1 = list1->next;
+                }
+            }
+        }
+        
+    }
+
+    return newList;
+
+}
+
+ Nodo * mergeSort(Nodo * list){
+
+     Nodo * mitad1 = NULL;
+     Nodo * mitad2 = NULL;
+     Nodo * nuevaLista = NULL;
+
+    int mitad = 0, largo = 0;
+    largo = size(list);
+
+    if(largo <= 1){
+        nuevaLista = list;
+    }
+    else{
+        mitad = largo/2;
+        
+        mitad1 = sublist(list, 1, mitad);
+        mitad2 = sublist(list, mitad+1, largo);
+
+        if(size(mitad1) <= 2){   
+            mitad1 = sortList(mitad1);
+        }
+        else{
+            mitad1 = mergeSort(mitad1);
+        }
+        
+        if(size(mitad2) <= 2){
+            mitad2 = sortList(mitad2);
+        }
+        else{
+            mitad2 = mergeSort(mitad2);
+        }
+
+
+        nuevaLista = interSort(mitad1, mitad2);
+
+    }
+
+    free(mitad1);
+    free(mitad2);
+
+    return nuevaLista;
+ }
+
+ Nodo * createTree(Nodo * list){
+
+    Nodo * aux = list;
+    
+    while(aux->next != NULL){
+        
+        Nodo * node1 = aux;
+        Nodo * node2 = aux->next;
+
+        Nodo * newNode = createNodo('*', node1->f+node2->f);
+        newNode->left = node1;
+        newNode->right = node2;
+        
+        Nodo * lastEqFreq = lastIndexOfFreq(list, node1->f+node2->f);
+        
+        if(lastEqFreq->next != NULL){
+            newNode->next = lastEqFreq->next;
+        }
+        
+        lastEqFreq->next = newNode;
+        
+        aux = aux->next->next;
+    }
+
+    return aux;
+
+}
+
+ 
 #endif

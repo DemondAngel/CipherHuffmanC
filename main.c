@@ -14,7 +14,11 @@ int main(){
 
     arbolList = readFile(fileName, arbolList);
 
-    displayList(arbolList);
+    arbolList = mergeSort(arbolList);
+    arbolList = createTree(arbolList);
+
+    printf("\nArbol\n");
+    inorder(arbolList);
     
     free(arbolList);
 
