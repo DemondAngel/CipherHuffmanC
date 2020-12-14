@@ -9,6 +9,7 @@
 typedef struct _Nodo{
 	char c;
 	int f;
+    char * way;
 	struct _Nodo *left;
 	struct _Nodo *right;
 	struct _Nodo * next;
@@ -74,11 +75,24 @@ void preorder(Nodo * origin){
 	}
 }
 
-void inorder(Nodo * origin){
+void inorder(Nodo * origin, char * d, char * pre){
+
 	if(origin!=NULL){
-		inorder(origin->left);
+
+        int lenPre = strlen(pre);
+        origin->way = NULL;
+        int i = 0;
+        origin->way = (char *) calloc(lenPre + 1, sizeof(char));
+        
+        for(i = 0; i < lenPre; i++){
+            origin->way[i] = pre[i];
+        }
+        
+        strcat(origin->way, d);
+        
+		inorder(origin->left, "0", origin->way);
 		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
-		inorder(origin->right);
+		inorder(origin->right,"1", origin->way);
 	}
 }
 
@@ -422,7 +436,7 @@ void displayList(Nodo * begin){
     else{
         while(begin != NULL){
             printf("\n Character %c\tFrequency: %i\n", begin->c, begin->f);
-
+            printf("\nWay: %s\n", begin->way);
             begin= begin->next;
         }
     }

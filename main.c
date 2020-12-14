@@ -3,23 +3,27 @@
 #include "Cipher.h"
 
 int main(){
+
     setlocale(LC_CTYPE, "");
     char fileName[100];
     Nodo * arbolList = NULL;
+    Nodo * list = NULL;
     
     printf("Porfavor escriba el nombre de su archivo: \n");
     printf("Please write your file name: \n");
 
     gets(fileName);
 
-    arbolList = readFile(fileName, arbolList);
+    list = readFile(fileName, list);
 
-    arbolList = mergeSort(arbolList);
-    arbolList = createTree(arbolList);
+    list = mergeSort(list);
+    arbolList = createTree(list);
 
     printf("\nArbol\n");
-    inorder(arbolList);
-    
+    inorder(arbolList,"","");
+    printf("\nLista\n");
+    displayList(list);
+
     free(arbolList);
 
     return 0;
