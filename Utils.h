@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 char formatChar(wchar_t wc){
     char newChar;
@@ -38,6 +39,19 @@ char formatChar(wchar_t wc){
     }
     
     return newChar;
+}
+
+int fromBinToNumber(char * bin){
+
+    int len = strlen(bin), i = 0, number = 0;
+
+    for(i = len-1; i > -1; i--){
+
+        number += pow(bin[i]-48, i);
+    }
+
+    return number;
+
 }
 
 #endif

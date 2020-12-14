@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
+char * word;
+
 typedef struct _Nodo{
 	char c;
 	int f;
@@ -478,9 +480,20 @@ Nodo * readFile(char * fileName, Nodo * list){
             wprintf(L"%c", wc);
 
             char c = formatChar(wc);
+            
+            if(word == NULL){
+                length = 1;
+                word = calloc(length, sizeof(char));
+            }
+            else{
+                length++;
+                word = realloc(word, length);
+            }
+
+            word[i] = c;
 
             list = insertFrequency(list, c);
-
+            i++;
         }
 
 	}	
@@ -635,5 +648,42 @@ Nodo * interSort(Nodo * list1, Nodo * list2){
 
 }
 
+void writeFileBin(Nodo * list){
+
+
+    int len = strlen(word), i = 0;
+    char * cipherWord = malloc(sizeof(char));
+    
+    for( i = 0; i < len; i++){
+        printf("\nLetra: %c\n", word[i]);
+
+        Nodo * letter = indexOfChar(list, word[i]);
+
+        if(letter != NULL){
+            strcat(cipherWord, letter->way);
+        }
+        
+    }
+
+    printf("\nCipher Word: %s\n", cipherWord);
+    /*
+    FILE * file = fopen("WordCompress.bin","wb");
+
+    if(file == NULL){
+        printf("\nThere was an error open the file\n");
+        printf("\nHubo un error al abrir el archivo\n");
+        exit(1);
+    }
+    else{
+
+        
+
+
+    }
+
+    fclose(file);
+    */
+
+}
  
 #endif

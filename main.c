@@ -24,6 +24,8 @@ int main(){
     printf("\nLista\n");
     displayList(list);
 
+    writeFileBin(list);
+
     free(arbolList);
 
     return 0;
