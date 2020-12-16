@@ -4,9 +4,61 @@
 #define _Cipher_
 #include <wchar.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
 #define MAXIMO(i,d) (((i)>(d))?(i):(d))
 
 char * word;
+
+char formatChar(wchar_t wc){
+    char newChar;
+
+    if(wc == ' '){
+        newChar = '_';
+    }
+    else{
+        int charCode = toascii(wc);
+        if(isascii(wc) == 0){
+            
+            if(wc == L'á' ||wc == L'ä' || wc == L'Á' ||wc == L'Ä'){
+                charCode = 97;
+            }
+            else if(wc == L'é' ||wc == L'ë' || wc == L'É' || wc == L'Ë'){
+                charCode = 101;
+            }
+            else if(wc == L'ï' || wc == L'í'  || wc == L'Í' || wc == L'Ï'){
+
+                charCode = 105;
+            }
+            else if(wc == L'ó' ||wc == L'ö' || wc == L'Ö' || wc == L'Ó'){
+                charCode = 111;
+            }
+            else if(wc == L'ú' ||wc == L'ü' || wc == L'Ú' || wc == L'Ü'){
+                charCode = 117;
+            }
+            
+        }
+
+        newChar = tolower(charCode);
+    }
+    
+    return newChar;
+}
+
+int fromBinToNumber(char * bin){
+
+    int len = strlen(bin), i = 0, number = 0;
+
+    for(i = len-1; i > -1; i--){
+
+        number += pow(bin[i]-48, i);
+    }
+
+    return number;
+
+}
 
 typedef struct _Nodo{
 	char c;
@@ -22,10 +74,6 @@ Nodo * createNodo (char c, int f){
 	Nodo * newNode;
     
 	newNode = (Nodo *) malloc(sizeof(Nodo));
-    
-    if(newNode == NULL){
-        printf("Murio");
-    }
 
 	newNode->c = c;
 	newNode->f = f;
@@ -71,7 +119,7 @@ Nodo * insertLeaf(Nodo * tree, char c, int f){
 
 void preorder(Nodo * origin){
 	if(origin!=NULL){
-		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
+		
 		preorder(origin->left);
 		preorder(origin->right);
 	}
@@ -93,7 +141,7 @@ void inorder(Nodo * origin, char * d, char * pre){
         strcat(origin->way, d);
         
 		inorder(origin->left, "0", origin->way);
-		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
+		
 		inorder(origin->right,"1", origin->way);
 	}
 }
@@ -130,7 +178,7 @@ void moveLeft(Nodo ** tree){
 void deleteLeaf(Nodo ** tree, int search){
 	Nodo * aux;
 	if(*(tree)==NULL){
-		printf("\nNO EXISTE EL Node A BORRAR");
+		
 	}else{
 		if(search < (*tree)->f)
 		deleteLeaf(&(*tree)->left,search);
@@ -163,7 +211,7 @@ int size(Nodo * begin){
     int i = 0;
 
     if(begin == NULL){
-        printf("\n La FILA esta vacia\n");
+        
     }
     else{
         while(begin != NULL){
@@ -235,7 +283,7 @@ Nodo * pushIn(Nodo * begin, char c,int f, int pos){
         }
     }
     else{
-        printf("Invalid position");
+        
     }
 
     return begin;
@@ -284,7 +332,7 @@ Nodo * popListElement(Nodo * begin, int pos){
 
     }
     else{
-        printf("Invalid position");
+        
     }
 
     return begin;    
@@ -296,7 +344,7 @@ Nodo * popList(Nodo * begin){
     Nodo * aux2;
 
     if(begin == NULL){
-        printf("\nThe list is empty\n");
+        
     }
     else{
         aux = begin;
@@ -319,7 +367,7 @@ Nodo * changeIndexOfListFrequency(Nodo * begin, char c, int frequency){
     int existe = 0;
 
     if(begin == NULL){
-        printf("\nLa lista esta vacia\n");
+        
     }
     else{
 
@@ -335,10 +383,6 @@ Nodo * changeIndexOfListFrequency(Nodo * begin, char c, int frequency){
                 aux = aux->next;
             }
 
-        }
-
-        if(existe == 0){
-            printf("\nNo existe el dato a cambiar\n");
         }
 
     }
@@ -359,7 +403,7 @@ void changeIndexOfList(Nodo *begin, char c, int f, int posicion) {
             aux ->c = c;
             aux -> f =f;
     }else{
-        printf("Posicion no valida");
+        
     }
 }
 
@@ -369,7 +413,7 @@ Nodo * indexOfChar(Nodo * begin, char c){
     int existe = 0;
 
     if(begin == NULL){
-        printf("\nLa lista esta vacia\n");
+        
     }
     else{
 
@@ -385,10 +429,6 @@ Nodo * indexOfChar(Nodo * begin, char c){
                 aux = aux->next;
             }
 
-        }
-
-        if(existe == 0){
-            printf("\nNo existe el dato a cambiar\n");
         }
 
     }
@@ -409,7 +449,6 @@ Nodo * elementList(Nodo * begin, int position){
             }
     }else{
         aux = NULL;
-        printf("Posicion no valida");
     }
 
     return aux;
@@ -476,8 +515,6 @@ Nodo * readFile(char * fileName, Nodo * list){
 	else{
         
         while((wc = fgetwc(file)) != WEOF){
-
-            wprintf(L"%c", wc);
 
             char c = formatChar(wc);
             
