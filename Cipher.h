@@ -98,11 +98,11 @@ void inorder(Nodo * origin, char * d, char * pre){
 	}
 }
 
-void posorder(Nodo * origin){
+void postorder(Nodo * origin, FILE * file){
 	if(origin!=NULL){
-		posorder(origin->left);
-		posorder(origin->right);
-		printf("Character %c, Frequency: %i\n",origin->c, origin->f);
+		postorder(origin->left, file);
+		postorder(origin->right, file);
+		fprintf(file, "%c %i ",origin->c, origin->f);
 	}
 }
 
@@ -648,42 +648,122 @@ Nodo * interSort(Nodo * list1, Nodo * list2){
 
 }
 
-void writeFileBin(Nodo * list){
+int convertBinToNumber(char * number){
 
+    int len = strlen(number), num = 0, i = 0, j = 0; 
+    for(i = len-1, j = 0; i > -1; i--, j++){
+        if(number[i] == '1'){
+            num += pow(2,j);
+        }
+    }
 
-    int len = strlen(word), i = 0;
-    char * cipherWord = malloc(sizeof(char));
-    
-    for( i = 0; i < len; i++){
-        printf("\nLetra: %c\n", word[i]);
+    len = 0;
+    i = 1;
+    while((num / i) == 0){
+        i = i*10;
+        len++;
+    }
 
-        Nodo * letter = indexOfChar(list, word[i]);
+    return num;
 
-        if(letter != NULL){
-            strcat(cipherWord, letter->way);
+}
+
+int * getBinary(Nodo * list){
+    Nodo * aux = NULL;
+    char * wordBin = NULL;
+    int length = strlen(word), i = 0;
+    int * numbers = NULL;
+
+    for(i = 0; i < length; i++){
+        int lenN = 0;
+        aux = indexOfChar(list, word[i]);
+
+        if(aux == NULL){
+            break;
+        }
+        else{
+            lenN = strlen(aux->way);
+
+            if(wordBin == NULL){
+                wordBin = (char * ) calloc(lenN, sizeof(char));
+            }
+            else{
+                int lenWB = strlen(wordBin);
+                wordBin = (char * ) realloc(wordBin, lenWB + lenN);
+            }
+
+            strcat(wordBin, aux->way);
         }
         
     }
 
-    printf("\nCipher Word: %s\n", cipherWord);
-    /*
-    FILE * file = fopen("WordCompress.bin","wb");
+    length = strlen(wordBin);
+
+    int r = length % 7;
+
+    if(r != 0){
+
+        wordBin = (char *) realloc(wordBin, (7-r) + length);
+        
+        int j = 0;
+        for(j = length; j < (7-r) + length; j++){
+            wordBin[j] = '0';
+        }
+
+        length = strlen(wordBin);
+    }
+    
+    numbers = calloc((length/7)+1, sizeof(char));
+    numbers[0] = length/7;
+
+    for(i = 0; i < length; i += 7){
+        
+        char binToConvert[8];
+        int z = 0;
+        
+        for(z = 0; z < 7; z++){
+            binToConvert[z] = wordBin[i+z];
+        }
+
+        int number = convertBinToNumber(binToConvert);
+        
+        numbers[i+1] = number;
+    }
+
+    return numbers;
+
+}
+
+void writeBinaryFile(int * numbers){
+
+    FILE * file = fopen("codigo.bin", "wb");
 
     if(file == NULL){
-        printf("\nThere was an error open the file\n");
-        printf("\nHubo un error al abrir el archivo\n");
+        printf("\nHubo un error al abrir tu archivo\n");
         exit(1);
     }
     else{
-
+        int largo = sizeof(numbers) / sizeof(numbers[0]);
+        fwrite(numbers, largo, sizeof(int), file);
         
-
-
     }
 
     fclose(file);
-    */
+}
 
+void writeKeyFile(Nodo * arbol){
+
+    FILE * file = fopen("llave.txt", "w");
+
+    if(file == NULL){
+        printf("\nHubo un error al abrir tu archivo\n");
+        exit(1);
+    }
+    else{
+        postorder(arbol, file);
+    }
+
+    fclose(file);
 }
  
 #endif

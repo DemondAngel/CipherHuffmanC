@@ -3,7 +3,7 @@
 #include "Cipher.h"
 
 int main(){
-
+    
     setlocale(LC_CTYPE, "");
     char fileName[100];
     Nodo * arbolList = NULL;
@@ -19,14 +19,16 @@ int main(){
     list = mergeSort(list);
     arbolList = createTree(list);
 
-    printf("\nArbol\n");
-    inorder(arbolList,"","");
-    printf("\nLista\n");
-    displayList(list);
+    inorder(arbolList, "","");
+    
+    int * numbers = getBinary(list);
 
-    writeFileBin(list);
+    writeBinaryFile(numbers);
+
+    writeKeyFile(arbolList);
 
     free(arbolList);
+    
 
     return 0;
 }
