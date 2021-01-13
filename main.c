@@ -1,8 +1,7 @@
 #include <locale.h>
 #include "Cipher.h"
 
-int main(){
-    
+int cipher(){
     setlocale(LC_CTYPE, "");
     char fileName[100];
     Nodo * arbolList = NULL;
@@ -27,7 +26,7 @@ int main(){
     
     printf("\nCreando palabra cifrada\n");
     int * numbers = getBinary(list);
-
+    
     printf("\nGenerando archivo binario\n");
     writeBinaryFile(numbers);
 
@@ -36,6 +35,42 @@ int main(){
 
     printf("\nCodificacion terminada\n");
     free(arbolList);
-    free(numbers);   
+    free(numbers); 
+}
+
+void decipher(){
+
+    Nodo * tree = NULL;
+    char * textBin = readBinaryFile();
+    tree = readKeyAndBuildTree(tree);
+    inorder(tree, "", "");
+    
+    printWord(textBin, tree);
+    printf("\nSe ha terminado de decifrar su texto\n");
+    free(tree);
+    free(textBin);
+}
+
+int main(){
+    
+    int opc = 0;
+
+    printf("\nBienvenido a la codificacion Huffman, eliga una opcion: \n");
+    printf("\n1. Cifrar\n");
+    printf("\n2. Decifrar\n");
+
+    scanf("%i", &opc);
+    
+    if(opc == 1){
+        fflush(stdin);
+        cipher();
+        
+    }
+    else{
+        decipher();
+        fflush(stdin);
+    }
+
+    
     return 0;
 }

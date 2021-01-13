@@ -67,9 +67,24 @@ typedef struct _Nodo{
 	struct _Nodo *left;
 	struct _Nodo *right;
 	struct _Nodo * next;
+    struct _Nodo * back;
 } Nodo;
 
-Nodo * createNodo (char c, int f){
+void displayList(Nodo * begin){
+
+    if(begin == NULL){
+        printf("\n The list is empty\n");
+    }
+    else{
+        while(begin != NULL){
+            printf("\n Character %c\tFrequency: %i\n", begin->c, begin->f);
+            printf("\nWay: %s\n", begin->way);
+            begin= begin->next;
+        }
+    }
+}
+
+Nodo * createNodo (char c, int f, char * way){
     
 	Nodo * newNode;
     
@@ -77,10 +92,11 @@ Nodo * createNodo (char c, int f){
 
 	newNode->c = c;
 	newNode->f = f;
+    newNode->way = way;
 	newNode->left=NULL;
 	newNode->right=NULL;
 	newNode->next = NULL;
-    
+    newNode->back = NULL;
 	return newNode;
 	
 }
@@ -89,7 +105,7 @@ Nodo * insertLeaf(Nodo * tree, char c, int f){
 	Nodo * origin;
 	Nodo * newNode;
 	
-	newNode = createNodo(c, f);
+	newNode = createNodo(c, f, NULL);
 	
 	if(tree==NULL){
 		return newNode;
@@ -133,17 +149,21 @@ void inorder(Nodo * origin, char * d, char * pre){
         origin->way = NULL;
         int i = 0;
         origin->way = (char *) calloc(lenPre + 1, sizeof(char));
-        
+
         for(i = 0; i < lenPre; i++){
             origin->way[i] = pre[i];
         }
         
         strcat(origin->way, d);
-        
+
 		inorder(origin->left, "0", origin->way);
-		
-		inorder(origin->right,"1", origin->way);
+
+        inorder(origin->right,"1", origin->way);
+
+
+              
 	}
+
 }
 
 void postorder(Nodo * origin, FILE * file){
@@ -225,10 +245,10 @@ int size(Nodo * begin){
 
 }
 
-Nodo * push(Nodo * begin, char c, int f){
+Nodo * push(Nodo * begin, char c, int f, char * way){
     Nodo * newNode;
     
-    newNode = createNodo(c, f);
+    newNode = createNodo(c, f, way);
 
     if(begin == NULL){
         begin = newNode;
@@ -242,34 +262,36 @@ Nodo * push(Nodo * begin, char c, int f){
         }
 
         aux->next = newNode;
+        newNode->back = aux;
     }
 
     return begin;
 }
 
-Nodo * pushInit(Nodo * top, char c, int f){
+Nodo * pushInit(Nodo * top, char c, int f, char * way){
     Nodo * newNode;
-    newNode = createNodo(c, f);
+    newNode = createNodo(c, f, way);
     
     if(top != NULL){
         newNode->next=top;
+        top->back = newNode;
     }
         
     return newNode;
 }
 
-Nodo * pushIn(Nodo * begin, char c,int f, int pos){
+Nodo * pushIn(Nodo * begin, char c,int f, char * way,int pos){
     Nodo * newNode;
     Nodo* aux;
     int i = 0;
     int len = size(begin);
 
-    newNode= createNodo(c, f);
+    newNode= createNodo(c, f, way);
 
     if(pos >= 0 && pos < len){
         if(pos == 0){
 
-            begin = pushInit(begin,c, f);
+            begin = pushInit(begin,c, f, way);
         }
         else{
             aux = begin;
@@ -277,8 +299,10 @@ Nodo * pushIn(Nodo * begin, char c,int f, int pos){
                 aux = aux->next;
             }
 
-            newNode ->next=aux->next;
+            newNode->next=aux->next;
             aux->next = newNode;
+            newNode->back = aux;
+            newNode->next->back = newNode;
 
         }
     }
@@ -295,6 +319,7 @@ Nodo * deleteBegin(Nodo * begin){
 
     if(begin !=  NULL){
         begin=begin->next;
+        begin->back = NULL;
         free(aux);
     }
 
@@ -327,6 +352,7 @@ Nodo * popListElement(Nodo * begin, int pos){
             aux2 = aux->next->next;
             toFree = aux->next;
             aux->next = aux2;
+            aux2->back =aux;
             free(toFree);
         }
 
@@ -469,20 +495,6 @@ Nodo * lastIndexOfFreq(Nodo * begin, int freq){
 
 }
 
-void displayList(Nodo * begin){
-
-    if(begin == NULL){
-        printf("\n The list is empty\n");
-    }
-    else{
-        while(begin != NULL){
-            printf("\n Character %c\tFrequency: %i\n", begin->c, begin->f);
-            printf("\nWay: %s\n", begin->way);
-            begin= begin->next;
-        }
-    }
-}
-
 Nodo * insertFrequency(Nodo * list, char c){
 
     int i = 0, j = 0;
@@ -493,7 +505,7 @@ Nodo * insertFrequency(Nodo * list, char c){
     aux = indexOfChar(list, c);
     
     if(aux == NULL){
-        list = push(list, c, 1);
+        list = push(list, c, 1, NULL);
     }
     else{
         list = changeIndexOfListFrequency(list, c, aux->f+1);
@@ -524,7 +536,7 @@ Nodo * readFile(char * fileName, Nodo * list){
             }
             else{
                 length++;
-                word = realloc(word, length);
+                word = realloc(word, sizeof(char)*length);
             }
 
             word[i] = c;
@@ -548,7 +560,7 @@ Nodo * sublist(Nodo * list, int begin, int end){
     for(i = 1; i <= tamanio; i++){
 
         if(begin <= i && i <= end){
-            sublist = push(sublist, aux->c, aux->f);
+            sublist = push(sublist, aux->c, aux->f, NULL);
         }
         
         aux = aux->next;
@@ -587,22 +599,22 @@ Nodo * interSort(Nodo * list1, Nodo * list2){
         
         if(list1 != NULL && list2 != NULL){
             if(list2->f >= list1->f){
-                newList = push(newList, list1->c, list1->f);
+                newList = push(newList, list1->c, list1->f, NULL);
                 list1 = list1->next;
             }
             else{
-                newList = push(newList, list2->c, list2->f);
+                newList = push(newList, list2->c, list2->f, NULL);
                 list2 = list2->next;
             }
         }
         else{
             if(list1 == NULL){
-                newList = push(newList, list2->c, list2->f);
+                newList = push(newList, list2->c, list2->f, NULL);
                 list2 = list2->next;
             }
             else{
                 if(list2 == NULL){
-                    newList = push(newList,list1->c, list1->f);
+                    newList = push(newList,list1->c, list1->f, NULL);
                     list1 = list1->next;
                 }
             }
@@ -666,7 +678,7 @@ Nodo * interSort(Nodo * list1, Nodo * list2){
         Nodo * node1 = aux;
         Nodo * node2 = aux->next;
 
-        Nodo * newNode = createNodo('*', node1->f+node2->f);
+        Nodo * newNode = createNodo('*', node1->f+node2->f, NULL);
         newNode->left = node1;
         newNode->right = node2;
         
@@ -686,19 +698,13 @@ Nodo * interSort(Nodo * list1, Nodo * list2){
 }
 
 int convertBinToNumber(char * number){
-
+ 
     int len = strlen(number), num = 0, i = 0, j = 0; 
     for(i = len-1, j = 0; i > -1; i--, j++){
+
         if(number[i] == '1'){
             num += pow(2,j);
         }
-    }
-
-    len = 0;
-    i = 1;
-    while((num / i) == 0){
-        i = i*10;
-        len++;
     }
 
     return num;
@@ -709,8 +715,9 @@ int * getBinary(Nodo * list){
     Nodo * aux = NULL;
     char * wordBin = NULL;
     int length = strlen(word), i = 0;
+    printf("El word es: %s", word);
     int * numbers = NULL;
-
+    
     for(i = 0; i < length; i++){
         int lenN = 0;
         aux = indexOfChar(list, word[i]);
@@ -726,21 +733,25 @@ int * getBinary(Nodo * list){
             }
             else{
                 int lenWB = strlen(wordBin);
-                wordBin = (char * ) realloc(wordBin, lenWB + lenN);
+                wordBin = (char * ) realloc(wordBin, sizeof(char) * (lenWB + lenN));
+                int t = 0;
+                for(t = lenWB; t < lenWB + lenN; t++){
+                    wordBin[t] = '\0';
+                }
             }
-
+            
             strcat(wordBin, aux->way);
         }
-        
+
     }
-
+    printf("\nAUn vive el wordBin es: %s\n", wordBin);
     length = strlen(wordBin);
-
+    
     int r = length % 7;
 
     if(r != 0){
 
-        wordBin = (char *) realloc(wordBin, (7-r) + length);
+        wordBin = (char *) realloc(wordBin, sizeof(char)*((7-r) + length));
         
         int j = 0;
         for(j = length; j < (7-r) + length; j++){
@@ -749,22 +760,25 @@ int * getBinary(Nodo * list){
 
         length = strlen(wordBin);
     }
-    
-    numbers = calloc((length/7)+1, sizeof(char));
-    numbers[0] = length/7;
 
+    
+    numbers = calloc((length/7)+2, sizeof(char));
+    numbers[(length/7)+2] = '\0';
+    numbers[0] = length/7;
+    
     for(i = 0; i < length; i += 7){
         
-        char binToConvert[8];
+        char binToConvert[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
         int z = 0;
         
         for(z = 0; z < 7; z++){
             binToConvert[z] = wordBin[i+z];
         }
-
-        int number = convertBinToNumber(binToConvert);
         
-        numbers[i+1] = number;
+        int number = convertBinToNumber(binToConvert);
+ 
+        int index = (i/7) +1;
+        numbers[index] = number;
     }
 
     return numbers;
@@ -780,8 +794,10 @@ void writeBinaryFile(int * numbers){
         exit(1);
     }
     else{
-        int largo = sizeof(numbers) / sizeof(numbers[0]);
-        fwrite(numbers, largo, sizeof(int), file);
+        int largo = numbers[0];
+        int i = 0;
+        
+        fwrite(numbers, largo+1, sizeof(int), file);
         
     }
 
@@ -802,5 +818,203 @@ void writeKeyFile(Nodo * arbol){
 
     fclose(file);
 }
+
+char * fromNumbersToBin(int * numbers, int len){
+    
+    char * textBin = calloc(0, sizeof(char));
+    int i = 0;
+
+    char numberBin[100];
+
+    for(i = 0; i < len; i++){
+        itoa(numbers[i],numberBin,2);
+
+        int lenNumber = strlen(numberBin);
+        char binAux[7];
+        int z = 0;
+        for(z = 0; z < 7; z++){
+            binAux[z] = '\0';
+        }
+
+        if(lenNumber < 7){
+            char zeroLeft[7-lenNumber+1];
+            int j = 0;
+            for(j = 0; j < 7-lenNumber+1; j++){
+                zeroLeft[j] = '\0';
+            }
+
+            for(j = 0; j < 7-lenNumber; j++){
+                zeroLeft[j] = '0';
+            }
+            strcat(binAux, zeroLeft);
+        }
+        
+        strcat(binAux, numberBin);
+
+        textBin = realloc(textBin,sizeof(char)*7*(i+1));
+        strcat(textBin, binAux);
+    }
+
+    return textBin;
+
+}
  
+char * readBinaryFile(){
+    int length = 0;
+    FILE * file = fopen("codigo.bin", "rb");
+    int * numbers = NULL;
+    if(file == NULL){
+        printf("\nHubo un problema al abrir su archivo\n");
+        exit(1);
+    }
+    else{
+        
+
+        fread(&length, 1, sizeof(int), file);
+
+        numbers = calloc(length, sizeof(int));
+        
+        fread(numbers, length, sizeof(int), file);
+        
+
+    }
+
+    fclose(file);
+
+    return fromNumbersToBin(numbers, length);
+}
+
+Nodo * readKeyAndBuildTree(Nodo * list){
+
+    FILE * file = fopen("llave.txt", "rt");
+    Nodo * raiz = NULL;
+    Nodo * listAux = NULL;
+    Nodo * aux = NULL;
+
+    if(file == NULL){
+        printf("\nHubo un problema al abrir su archivo llave\n");
+        exit(0);
+    }
+    else{
+        char letter = ' ';
+        int frequency = 0;
+
+        while(!feof(file)){
+            
+            fscanf(file, "%c %i ", &letter, &frequency);
+            list = push(list, letter, frequency, NULL);
+            
+            
+            if(letter == '*'){
+                
+                Nodo * u = list;
+
+                while(u->next != NULL){
+                    u = u->next;
+                    
+                }
+                
+                u ->left = u->back->back;
+                u ->right = u->back;
+
+                if(u->left->back == NULL){
+                    u->back = NULL;
+                    list = u;
+                }
+                else{
+                    u->left->back->next = u;
+                    u->back = u->left->back;
+                }
+
+                u->left->next = u->right;
+                u->left->back = NULL;
+                u->right->next = NULL;
+                u->right->back = u->left;
+                
+
+                if(listAux == NULL){
+                    
+                    listAux = u->left;
+                }
+                else{
+                    aux = listAux;
+                    while(aux->next != NULL){
+                        aux = aux->next;
+                    }
+                    
+                    aux->next = u->left;
+                    u->left->back = aux;
+                }
+               
+                raiz = u;
+            }
+            
+        }
+    }
+
+    fclose(file);
+    
+    if(listAux != NULL){
+
+        raiz->next = listAux;
+        raiz->back = NULL;
+        listAux->back = raiz;
+    }
+
+    return raiz;
+}
+
+Nodo * searchLetter(Nodo * list, char c, int index){
+
+    Nodo * sublist = NULL;
+    Nodo * aux = list;
+    //printf("\nEntra str: %s\n", str);
+    while(aux != NULL){
+
+        int wayLen = strlen(aux->way);
+        
+        if(index < wayLen){
+            if(aux->way[index] == c){
+                int lenWay = strlen(aux->way);
+                char * way = calloc(lenWay, sizeof(char));
+                strcpy(way, aux->way);
+                sublist = push(sublist, aux->c, aux->f, way);
+            }
+        }
+
+        aux = aux->next;
+    }
+
+    
+    return sublist;
+
+}
+
+void printWord(char * textBin, Nodo * list){
+    FILE * file = fopen("textDecoded.txt", "wt");
+    int i = 0;
+    int len = strlen(textBin);
+
+    Nodo * sublist = list;
+    int sublistLen = 0;
+    int n = 0;
+    for(i = 0; i < len; i++, n++){
+        
+        sublist = searchLetter(sublist, textBin[i], n);
+        sublistLen = size(sublist);
+
+        if(sublistLen == 1){
+            fprintf(file, "%c", sublist->c);
+            n = -1;
+            free(sublist);
+            sublist = list;
+
+        }
+
+    }
+
+    fclose(file);
+
+}
+
 #endif
