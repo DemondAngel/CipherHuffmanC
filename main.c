@@ -42,9 +42,15 @@ int cipher(){
 void decipher(){
 
     Nodo * tree = NULL;
-    int * numbers = readBinaryFile();
+    char nameBin[100];
+    char nameKey[100];
+
+    printf("\nPor favor escriba el nombre de su archivo binario y su llave, respectivamente\n");
+    scanf("%s %s", &nameBin, &nameKey);
+    fflush(stdin);
+    int * numbers = readBinaryFile(nameBin);
    
-    tree = readKeyAndBuildTree(tree);
+    tree = readKeyAndBuildTree(tree, nameKey);
     inorder(tree, "", "");
 
     printWord(numbers, tree);
@@ -69,8 +75,9 @@ int main(){
         
     }
     else{
-        decipher();
         fflush(stdin);
+        decipher();
+        
     }
 
     

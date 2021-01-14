@@ -869,9 +869,9 @@ char * fromNumbersToBin(int number){
 
 }
  
-int * readBinaryFile(){
+int * readBinaryFile(char * fileName){
     int length = 0;
-    FILE * file = fopen("codigo.bin", "rb");
+    FILE * file = fopen(fileName, "rb");
     int * numbers = NULL;
     int * numbers2 = NULL;
     int i = 0;
@@ -902,9 +902,9 @@ int * readBinaryFile(){
     return numbers2;
 }
 
-Nodo * readKeyAndBuildTree(Nodo * list){
+Nodo * readKeyAndBuildTree(Nodo * list, char * fileName){
 
-    FILE * file = fopen("llave.txt", "rt");
+    FILE * file = fopen(fileName, "rt");
     Nodo * raiz = NULL;
     Nodo * listAux = NULL;
     Nodo * aux = NULL;
@@ -1011,7 +1011,7 @@ Nodo * searchLetter(Nodo * list, char c, int index){
 }
 
 void printWord(int * numbers, Nodo * list){
-    FILE * file = fopen("textDecoded.txt", "wt");
+    FILE * file = fopen("frase.txt", "wt");
     int i = 0, j = 0, n= 0;
     int len = numbers[0], lenBits = 0;
     char * textBin = NULL;
