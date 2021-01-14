@@ -42,15 +42,15 @@ int cipher(){
 void decipher(){
 
     Nodo * tree = NULL;
-    char * textBin = readBinaryFile();
-    
+    int * numbers = readBinaryFile();
+   
     tree = readKeyAndBuildTree(tree);
     inorder(tree, "", "");
-    
-    printWord(textBin, tree);
+
+    printWord(numbers, tree);
     printf("\nSe ha terminado de decifrar su texto\n");
     free(tree);
-    free(textBin);
+    free(numbers);
 }
 
 int main(){

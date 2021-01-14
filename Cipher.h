@@ -832,69 +832,49 @@ void writeKeyFile(Nodo * arbol){
     fclose(file);
 }
 
-char * fromNumbersToBin(int * numbers, int len){
+char * fromNumbersToBin(int number){
     
-    char * textBin = calloc(0, sizeof(char));
     int i = 0;
 
-    char numberBin[100];
+    char numberBin[50];
 
-    for(i = 0; i < len; i++){
-        itoa(numbers[i],numberBin,2);
+    itoa(number,numberBin,2);
 
-        int lenNumber = strlen(numberBin);
-        char binAux[7];
-        int z = 0;
-        for(z = 0; z < 7; z++){
-            binAux[z] = '\0';
-        }
+    int lenNumber = strlen(numberBin);
+    
+    static char binAux[8];
 
-        if(lenNumber < 7){
-            
-            char zeroLeft[7-lenNumber+1];
-            int j = 0;
-            for(j = 0; j < 7-lenNumber+1; j++){
-                zeroLeft[j] = '\0';
-            }
-
-            for(j = 0; j < 7-lenNumber; j++){
-                zeroLeft[j] = '0';
-            }
-            strcat(binAux, zeroLeft);
-        }
-        
-        strcat(binAux, numberBin);
-
-        char textBinAux[strlen(textBin)+1];
-        int sec = 0;
-
-        strcpy(textBinAux, textBin);
-        
-        do{
-            textBin = realloc(textBin,sizeof(char)*7*(i+1));
-            if(textBin == NULL){
-                printf("\nSi entra2\n");
-                sec = 1;
-            }
-        }while(textBin == NULL);
-        
-        if(sec == 1){
-            printf("\nSi entra2\n");
-            strcpy(textBin, textBinAux);
-        }
-        
-        strcat(textBin, binAux);
-        
+    int z = 0;
+    for(z = 0; z < 8; z++){
+        binAux[z] = '\0';
     }
-    printf("\nFin\n");
-    return textBin;
+
+    if(lenNumber < 7){
+        
+        char zeroLeft[7-lenNumber+1];
+        int j = 0;
+        for(j = 0; j < 7-lenNumber+1; j++){
+            zeroLeft[j] = '\0';
+        }
+
+        for(j = 0; j < 7-lenNumber; j++){
+            zeroLeft[j] = '0';
+        }
+        strcat(binAux, zeroLeft);
+    }
+    
+    strcat(binAux, numberBin);    
+
+    return binAux;
 
 }
  
-char * readBinaryFile(){
+int * readBinaryFile(){
     int length = 0;
     FILE * file = fopen("codigo.bin", "rb");
     int * numbers = NULL;
+    int * numbers2 = NULL;
+    int i = 0;
     if(file == NULL){
         printf("\nHubo un problema al abrir su archivo\n");
         exit(1);
@@ -907,12 +887,19 @@ char * readBinaryFile(){
         numbers = calloc(length, sizeof(int));
         
         fread(numbers, length, sizeof(int), file);
+
+        numbers2 = calloc(length+1, sizeof(int));
+        
+        numbers2[0] = length;
+        for(i = 1; i <= length+1; i++){
+            numbers2[i] = numbers[i-1];
+        }
         
     }
 
     fclose(file);
 
-    return fromNumbersToBin(numbers, length);
+    return numbers2;
 }
 
 Nodo * readKeyAndBuildTree(Nodo * list){
@@ -999,15 +986,17 @@ Nodo * searchLetter(Nodo * list, char c, int index){
 
     Nodo * sublist = NULL;
     Nodo * aux = list;
-    //printf("\nEntra str: %s\n", str);
+    char * way =NULL;
+    
     while(aux != NULL){
 
         int wayLen = strlen(aux->way);
         
         if(index < wayLen){
             if(aux->way[index] == c){
+                
                 int lenWay = strlen(aux->way);
-                char * way = calloc(lenWay, sizeof(char));
+                way = calloc(lenWay, sizeof(char));
                 strcpy(way, aux->way);
                 sublist = push(sublist, aux->c, aux->f, way);
             }
@@ -1015,32 +1004,44 @@ Nodo * searchLetter(Nodo * list, char c, int index){
 
         aux = aux->next;
     }
-
+    
     
     return sublist;
 
 }
 
-void printWord(char * textBin, Nodo * list){
+void printWord(int * numbers, Nodo * list){
     FILE * file = fopen("textDecoded.txt", "wt");
-    int i = 0;
-    int len = strlen(textBin);
+    int i = 0, j = 0, n= 0;
+    int len = numbers[0], lenBits = 0;
+    char * textBin = NULL;
 
     Nodo * sublist = list;
     int sublistLen = 0;
-    int n = 0;
-    for(i = 0; i < len; i++, n++){
+
+
+    for(i = 1; i <= len; i++){
+
+        textBin = fromNumbersToBin(numbers[i]);
+
+        lenBits = strlen(textBin);
         
-        sublist = searchLetter(sublist, textBin[i], n);
-        sublistLen = size(sublist);
-
-        if(sublistLen == 1){
-            fprintf(file, "%c", sublist->c);
-            n = -1;
-            free(sublist);
-            sublist = list;
-
+        for(j = 0; j < lenBits; j++, n++){
+            
+            sublist = searchLetter(sublist, textBin[j], n);
+            
+            sublistLen = size(sublist);
+            
+            if(sublistLen == 1){
+                fprintf(file, "%c", sublist->c);
+                
+                n = -1;
+                free(sublist);
+                sublist = list;
+            }
         }
+        
+        
 
     }
 
