@@ -26,7 +26,8 @@ int cipher(){
     
     printf("\nCreando palabra cifrada\n");
     int * numbers = getBinary(list);
-    
+
+        
     printf("\nGenerando archivo binario\n");
     writeBinaryFile(numbers);
 
@@ -34,14 +35,15 @@ int cipher(){
     writeKeyFile(arbolList);
 
     printf("\nCodificacion terminada\n");
+    
     free(arbolList);
-    free(numbers); 
 }
 
 void decipher(){
 
     Nodo * tree = NULL;
     char * textBin = readBinaryFile();
+    
     tree = readKeyAndBuildTree(tree);
     inorder(tree, "", "");
     

@@ -49,11 +49,14 @@ char formatChar(wchar_t wc){
 
 int fromBinToNumber(char * bin){
 
-    int len = strlen(bin), i = 0, number = 0;
+    int len = strlen(bin), i = 0, number = 0, j = 0;
 
-    for(i = len-1; i > -1; i--){
+    for(i = len-1; i > -1; i--, j++){
 
-        number += pow(bin[i]-48, i);
+        if(bin[i] == '1'){
+            number += pow(2,j);
+        }
+        
     }
 
     return number;
@@ -711,78 +714,88 @@ int convertBinToNumber(char * number){
 
 }
 
+int * interBinNumber(char * bin, int * numbers){
+
+    if(numbers == NULL){
+        numbers = calloc(2, sizeof(int));
+        numbers[0] = 1;
+    }
+    else{
+        numbers[0] += 1;
+        numbers = (int * ) realloc(numbers, sizeof(int)*(numbers[0]+1));
+    }
+
+    int number = fromBinToNumber(bin);
+
+    numbers[numbers[0]] = number;
+
+    return numbers;
+}
+
 int * getBinary(Nodo * list){
-    Nodo * aux = NULL;
-    char * wordBin = NULL;
-    int length = strlen(word), i = 0;
-    printf("El word es: %s", word);
+    
     int * numbers = NULL;
-    
-    for(i = 0; i < length; i++){
-        int lenN = 0;
-        aux = indexOfChar(list, word[i]);
+    int i = 0, n = 0, j = 0, s = 0;
+    int lenWord = strlen(word);
+    Nodo * aux = NULL;
+    char bin[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
 
-        if(aux == NULL){
-            break;
-        }
-        else{
-            lenN = strlen(aux->way);
+    for(i = 0; i< lenWord; i++){
+        
+        int lenBin = strlen(bin);
+        
+         Nodo * aux = indexOfChar(list, word[i]);
 
-            if(wordBin == NULL){
-                wordBin = (char * ) calloc(lenN, sizeof(char));
-            }
-            else{
-                int lenWB = strlen(wordBin);
-                wordBin = (char * ) realloc(wordBin, sizeof(char) * (lenWB + lenN));
-                int t = 0;
-                for(t = lenWB; t < lenWB + lenN; t++){
-                    wordBin[t] = '\0';
+         if(aux != NULL){
+             int lenWay = strlen(aux->way);
+             
+                if((lenBin + lenWay) < 7){
+                    for(j = 0; j < lenWay; j++, n++){
+                        bin[n] = aux->way[j];
+                    }
                 }
-            }
-            
-            strcat(wordBin, aux->way);
-        }
+                else{
+                    s = 0;
+                    for(j = 0; j < 7-lenBin; j++, n++){
+                        bin[n] = aux->way[j];
+                        s++;
+                    }
 
+                }
+
+                lenWay = strlen(aux->way);
+
+                lenBin = strlen(bin);
+
+                if(lenBin == 7){
+                    numbers = interBinNumber(bin, numbers);
+                    
+                    n = 0;
+                    for(j = 0; j < 7; j++){
+                        bin[j] = '\0';
+                    }
+                    
+                    for(j = s; j < lenWay; j++, n++){
+                        bin[n] = aux->way[j];
+                    }       
+                    
+                }       
+                
+         }
+        
     }
-    printf("\nAUn vive el wordBin es: %s\n", wordBin);
-    length = strlen(wordBin);
-    
-    int r = length % 7;
 
-    if(r != 0){
-
-        wordBin = (char *) realloc(wordBin, sizeof(char)*((7-r) + length));
-        
-        int j = 0;
-        for(j = length; j < (7-r) + length; j++){
-            wordBin[j] = '0';
+    if(strlen(bin) < 7){
+        int lenBin  =strlen(bin);
+        for(j = lenBin; j < 7; j++){
+            bin[j] = '0';
         }
 
-        length = strlen(wordBin);
-    }
+        numbers = interBinNumber(bin, numbers);
 
-    
-    numbers = calloc((length/7)+2, sizeof(char));
-    numbers[(length/7)+2] = '\0';
-    numbers[0] = length/7;
-    
-    for(i = 0; i < length; i += 7){
-        
-        char binToConvert[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
-        int z = 0;
-        
-        for(z = 0; z < 7; z++){
-            binToConvert[z] = wordBin[i+z];
-        }
-        
-        int number = convertBinToNumber(binToConvert);
- 
-        int index = (i/7) +1;
-        numbers[index] = number;
     }
 
     return numbers;
-
 }
 
 void writeBinaryFile(int * numbers){
@@ -837,6 +850,7 @@ char * fromNumbersToBin(int * numbers, int len){
         }
 
         if(lenNumber < 7){
+            
             char zeroLeft[7-lenNumber+1];
             int j = 0;
             for(j = 0; j < 7-lenNumber+1; j++){
@@ -851,10 +865,28 @@ char * fromNumbersToBin(int * numbers, int len){
         
         strcat(binAux, numberBin);
 
-        textBin = realloc(textBin,sizeof(char)*7*(i+1));
-        strcat(textBin, binAux);
-    }
+        char textBinAux[strlen(textBin)+1];
+        int sec = 0;
 
+        strcpy(textBinAux, textBin);
+        
+        do{
+            textBin = realloc(textBin,sizeof(char)*7*(i+1));
+            if(textBin == NULL){
+                printf("\nSi entra2\n");
+                sec = 1;
+            }
+        }while(textBin == NULL);
+        
+        if(sec == 1){
+            printf("\nSi entra2\n");
+            strcpy(textBin, textBinAux);
+        }
+        
+        strcat(textBin, binAux);
+        
+    }
+    printf("\nFin\n");
     return textBin;
 
 }
@@ -871,12 +903,11 @@ char * readBinaryFile(){
         
 
         fread(&length, 1, sizeof(int), file);
-
+        
         numbers = calloc(length, sizeof(int));
         
         fread(numbers, length, sizeof(int), file);
         
-
     }
 
     fclose(file);
